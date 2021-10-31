@@ -41,6 +41,9 @@ async function evalScript(text, defs = {}) {
   if (!isBrowser) {
     let CS_Interface = new CSInterface();
     return new Promise((resolve, reject) => {
+      if (text.startsWith("$.evalFile")){
+        text=text.replace(/\\/g,"\/")
+      }
       CS_Interface.evalScript(`${text}`, (res) => {
         // For some reason this was returning errors in InDesign alone. No idea why
         resolve(isJson(res) ? JSON.parse(res) : res);
@@ -78,11 +81,11 @@ function loadScript(path) {
   if (isBrowser) return null;
   // Correctly execute regardless of whether Animate or regular CEP app
   if (!/FLPR/.test(spy.appName))
-    evalScript(`$.evalFile('${fspath.resolve(path)}')`);
+    evalScript(`$.evalFile('${fspath.resolve(path).replace(/\\/g,"\/")}')`);
   // Thanks to @adamplouff for below
   else
     evalScript(
-      `fl.runScript(FLfile.platformPathToURI("${fspath.resolve(path)}"))`
+      `fl.runScript(FLfile.platformPathToURI("${fspath.resolve(path).replace(/\\/g,"\/")}"))`
     );
 }
 
