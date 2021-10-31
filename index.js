@@ -41,6 +41,9 @@ async function evalScript(text, defs = {}) {
   if (!isBrowser) {
     let CS_Interface = new CSInterface();
     return new Promise((resolve, reject) => {
+      if (text.startsWith("$.evalFile")){
+        text=text.replace(/\\/g,"\/")
+      }
       CS_Interface.evalScript(`${text}`, (res) => {
         // For some reason this was returning errors in InDesign alone. No idea why
         resolve(isJson(res) ? JSON.parse(res) : res);
